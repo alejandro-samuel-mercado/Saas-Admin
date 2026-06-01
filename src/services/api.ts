@@ -53,7 +53,13 @@ api.interceptors.request.use(
                 const parts = hostname.split('.');
                 // Asumimos que el primer segmento es el tenant (si el dominio base tiene al menos 2 partes, ej nuba.com)
                 if (parts.length >= 3 || (parts.length === 2 && !hostname.includes('vercel.app'))) {
-                    tenantId = parts[0];
+                    const sub = parts[0].toLowerCase();
+                    const systemSubdomains = ['saas', 'www', 'admin', 'panel', 'api'];
+                    if (systemSubdomains.includes(sub)) {
+                        tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+                    } else {
+                        tenantId = parts[0];
+                    }
                 }
             } else {
                 // En desarrollo local, permitir sobrescribir vía localStorage para pruebas fáciles
