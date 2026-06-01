@@ -11,7 +11,7 @@ import { formatCurrency } from "@/lib/utils"
 import { CategoriesAPI, ConfigAPI, CurrenciesAPI, ProductsAPI } from "@/services/api"
 import { useConfigStore, useRubro } from "@/store/config.store"
 import { Category, Condition, Currency, Product, SaleMode } from "@/types/schema"
-import { Plus, X } from "lucide-react"
+import { Plus, X, Upload } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -362,6 +362,44 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
                                     >
                                         <Plus className="h-4 w-4 mr-1" /> Agregar
                                     </Button>
+                                    {rubro?.slug === 'inmuebles' && (
+                                        <Button
+                                            type="button"
+                                            variant="secondary"
+                                            size="sm"
+                                            className="hover:cursor-pointer"
+                                            onClick={() => {
+                                                const current = Array.isArray(formData.characteristics) ? formData.characteristics : [];
+                                                const newTemplate = [
+                                                    { key: 'Uso de suelo', value: '' },
+                                                    { key: 'Ciudad/Zona/Dirección', value: '' },
+                                                    { key: 'Mapa interactivo GPS', value: '' },
+                                                    { key: 'Referencias', value: '' },
+                                                    { key: 'Área total', value: '' },
+                                                    { key: 'Área construida', value: '' },
+                                                    { key: 'Frente x Fondo', value: '' },
+                                                    { key: 'Forma', value: '' },
+                                                    { key: 'Servicios (agua/luz/calle)', value: '' },
+                                                    { key: 'Dormitorios', value: '' },
+                                                    { key: 'Baños', value: '' },
+                                                    { key: 'Cochera', value: '' },
+                                                    { key: 'Otras características (Cerco, Pozo, etc.)', value: '' },
+                                                    { key: 'Estado Legal (Escritura/Trámite)', value: 'Escritura al día' },
+                                                    { key: 'Gravámenes', value: 'Ninguno' },
+                                                    { key: 'Precio/m²', value: '' },
+                                                    { key: 'Formas de pago', value: 'Contado / Financiado' },
+                                                    { key: 'Plano/Croquis (Enlace)', value: '' },
+                                                    { key: 'Persona encargada', value: '' }
+                                                ];
+                                                // Avoid adding if they already exist
+                                                const currentKeys = current.map((c: any) => c.key);
+                                                const toAdd = newTemplate.filter(t => !currentKeys.includes(t.key));
+                                                setFormData({ ...formData, characteristics: [...current, ...toAdd] });
+                                            }}
+                                        >
+                                            Cargar Plantilla Inmobiliaria
+                                        </Button>
+                                    )}
                                 </div>
                                 <div className="max-h-[200px] overflow-y-auto space-y-2 pr-1">
                                     {(Array.isArray(formData.characteristics) ? formData.characteristics : []).map((item, idx) => (
@@ -377,17 +415,47 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
                                                 }}
                                                 className="flex-1 bg-background border-input text-foreground text-sm"
                                             />
-                                            <Input
-                                                placeholder="Ej: Acero inoxidable"
-                                                value={item.value}
-                                                onChange={(e) => {
-                                                    const currentChars = Array.isArray(formData.characteristics) ? formData.characteristics : [];
-                                                    const updated = [...currentChars];
-                                                    updated[idx] = { ...updated[idx], value: e.target.value };
-                                                    setFormData({ ...formData, characteristics: updated });
-                                                }}
-                                                className="flex-1 bg-background border-input text-foreground text-sm"
-                                            />
+                                            <div className="flex-1 flex gap-2">
+                                                <Input
+                                                    placeholder="Ej: Acero inoxidable"
+                                                    value={item.value}
+                                                    onChange={(e) => {
+                                                        const currentChars = Array.isArray(formData.characteristics) ? formData.characteristics : [];
+                                                        const updated = [...currentChars];
+                                                        updated[idx] = { ...updated[idx], value: e.target.value };
+                                                        setFormData({ ...formData, characteristics: updated });
+                                                    }}
+                                                    className="w-full bg-background border-input text-foreground text-sm"
+                                                />
+                                                {(item.key.toLowerCase().includes('plano') || item.key.toLowerCase().includes('croquis') || item.key.toLowerCase().includes('documento')) && (
+                                                    <div className="relative shrink-0">
+                                                        <Input
+                                                            type="file"
+                                                            accept=".pdf,image/*"
+                                                            className="hidden"
+                                                            id={`upload-char-${idx}`}
+                                                            onChange={async (e) => {
+                                                                const file = e.target.files?.[0]
+                                                                if (file) {
+                                                                    try {
+                                                                        const { UploadAPI } = require("@/services/api")
+                                                                        const url = await UploadAPI.upload(file)
+                                                                        const currentChars = Array.isArray(formData.characteristics) ? formData.characteristics : [];
+                                                                        const updated = [...currentChars];
+                                                                        updated[idx] = { ...updated[idx], value: url };
+                                                                        setFormData({ ...formData, characteristics: updated });
+                                                                    } catch (error) {
+                                                                        alert("Error al subir archivo")
+                                                                    }
+                                                                }
+                                                            }}
+                                                        />
+                                                        <Label htmlFor={`upload-char-${idx}`} className="cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground h-10 w-10 rounded-md flex items-center justify-center border border-border" title="Subir Archivo">
+                                                            <Upload className="h-4 w-4" />
+                                                        </Label>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <Button
                                                 type="button"
                                                 variant="ghost"
@@ -766,17 +834,24 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
                                     <Input
                                         type="file"
                                         accept="image/*"
+                                        multiple
                                         className="hidden"
                                         id="image-upload"
                                         onChange={async (e) => {
-                                            const file = e.target.files?.[0]
-                                            if (file) {
+                                            const files = Array.from(e.target.files || []);
+                                            if (files.length > 0) {
                                                 try {
-                                                    const { UploadAPI } = require("@/services/api")
-                                                    const url = await UploadAPI.upload(file)
-                                                    setFormData(prev => ({ ...prev, images: [...(prev.images || []), url] }))
+                                                    const { UploadAPI } = require("@/services/api");
+                                                    // Upload files concurrently
+                                                    const uploadPromises = files.map(file => UploadAPI.upload(file));
+                                                    const urls = await Promise.all(uploadPromises);
+                                                    
+                                                    setFormData(prev => ({ 
+                                                        ...prev, 
+                                                        images: [...(prev.images || []), ...urls] 
+                                                    }));
                                                 } catch (error) {
-                                                    alert("Error al subir imagen")
+                                                    alert("Error al subir algunas imágenes. Intente con menos cantidad o verifique el tamaño.");
                                                 }
                                             }
                                         }}
