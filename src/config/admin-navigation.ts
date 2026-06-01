@@ -64,7 +64,8 @@ export const adminNavigation: NavItem[] = [
         icon: Package,
         href: "/management/products",
         roles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'],
-        permissionKey: 'products'
+        permissionKey: 'products',
+        moduleKey: 'products'
     },
     {
         title: "Usuarios",
@@ -179,7 +180,8 @@ export const adminNavigation: NavItem[] = [
                 title: "Categorías",
                 icon: Tags,
                 href: "/management/categories",
-                roles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE']
+                roles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'],
+                moduleKey: 'categories'
             },
             {
                 title: "Cupones",
@@ -258,7 +260,8 @@ export const adminNavigation: NavItem[] = [
          href: "/management/settings",
                 icon: Settings,
         roles: ['SUPER_ADMIN'],
-        permissionKey: 'settings'
+        permissionKey: 'settings',
+        moduleKey: 'settings'
     },
     {
         title: "Auditoría",
