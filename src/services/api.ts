@@ -51,8 +51,10 @@ api.interceptors.request.use(
             // Ej: tienda1.miplataforma.com -> tienda1
             if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
                 const parts = hostname.split('.');
+                const isVercel = hostname.endsWith('.vercel.app') || hostname.includes('vercel.app');
+                
                 // Asumimos que el primer segmento es el tenant (si el dominio base tiene al menos 2 partes, ej nuba.com)
-                if (parts.length >= 3 || (parts.length === 2 && !hostname.includes('vercel.app'))) {
+                if (!isVercel && (parts.length >= 3 || (parts.length === 2 && !hostname.includes('vercel.app')))) {
                     const sub = parts[0].toLowerCase();
                     const systemSubdomains = ['saas', 'www', 'admin', 'panel', 'api'];
                     if (systemSubdomains.includes(sub)) {
