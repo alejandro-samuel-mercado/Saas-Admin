@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { adminNavigation } from "@/config/admin-navigation"
 import { useErrorInterceptor, useNotificationFetcher, useSocketNotifications } from "@/hooks/use-notification-fetcher"
-import { cn } from "@/lib/utils"
+import { cn, getDynamicLabel } from "@/lib/utils"
 import { useConfigStore, useRubro } from "@/store/config.store"
 import { useAuthStore } from "@/store/use-auth-store"
 import { UserRole } from "@/types/schema"
@@ -234,7 +234,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                                 >
                                     <div className="flex items-center gap-3">
                                         <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "text-white/70")} />
-                                        <span>{item.title}</span>
+                                        <span>{getDynamicLabel(item.title, rubro?.slug)}</span>
                                     </div>
                                     {isOpen ? <ChevronUp className="h-4 w-4 opacity-50" /> : <ChevronDown className="h-4 w-4 opacity-50" />}
                                 </Button>
@@ -271,7 +271,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                                                     {isChildActive && (
                                                         <span className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white"></span>
                                                     )}
-                                                    <span className={cn("transition-transform", isChildActive && "translate-x-1")}>{child.title}</span>
+                                                    <span className={cn("transition-transform", isChildActive && "translate-x-1")}>{getDynamicLabel(child.title, rubro?.slug)}</span>
                                                 </Button>
                                             </Link>
                                         )})}
@@ -300,7 +300,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                                 collapsed ? "w-6 h-6" : "w-5 h-5",
                                 isActive ? "text-white" : "text-white/70 group-hover:text-white"
                             )} />
-                            {!collapsed && <span>{item.title}</span>}
+                            {!collapsed && <span>{getDynamicLabel(item.title, rubro?.slug)}</span>}
                             
                             {collapsed && isActive && (
                                 <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-white rounded-r-md"></div>

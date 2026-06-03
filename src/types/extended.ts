@@ -131,6 +131,7 @@ export interface StoreConfig {
   customPageTextsSubtitle?: string;
   customPageImagesSubtitle?: string;
   customPageVideosSubtitle?: string;
+  customPageChronology?: { year: string; title: string; desc: string }[];
 
   activeEvent?: Event;
   overriddenByEvent?: {

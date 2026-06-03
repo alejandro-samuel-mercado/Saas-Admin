@@ -35,3 +35,18 @@ export function formatCurrency(amount: number | string, currencyCode: string = '
 
   return formatted;
 }
+
+export function getDynamicLabel(defaultWord: string, rubroSlug?: string): string {
+  if (!rubroSlug) return defaultWord;
+
+  const isPlural = defaultWord.endsWith('s') || defaultWord.endsWith('es');
+  
+  if (defaultWord.toLowerCase().includes('producto')) {
+    if (rubroSlug.includes('inmueble') || rubroSlug.includes('propiedad')) return isPlural ? 'Inmuebles' : 'Inmueble';
+    if (rubroSlug.includes('barberia') || rubroSlug.includes('servicio')) return isPlural ? 'Servicios' : 'Servicio';
+    if (rubroSlug.includes('vehiculo') || rubroSlug.includes('auto')) return isPlural ? 'Vehículos' : 'Vehículo';
+    if (rubroSlug.includes('reserva')) return isPlural ? 'Reservas' : 'Reserva';
+  }
+
+  return defaultWord;
+}

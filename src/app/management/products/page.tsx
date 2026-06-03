@@ -22,7 +22,9 @@ import { exportToCSV } from "@/lib/export-utils";
 import { ProductsAPI } from "@/services/api";
 import { useBranchStore } from "@/store/branch.store";
 import { useAuthStore } from "@/store/use-auth-store";
+import { useRubro } from "@/store/config.store";
 import { Product, UserRole } from "@/types/schema";
+import { getDynamicLabel } from "@/lib/utils";
 import {
     Barcode,
     ChevronDown,
@@ -50,8 +52,12 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const { activeBranch } = useBranchStore();
   const { user } = useAuthStore();
+  const rubro = useRubro();
   const { toast } = useToast();
   const currentUserRole = (user?.role?.name || "EMPLOYEE") as UserRole;
+
+  const productLabelPlural = getDynamicLabel("Productos", rubro?.slug);
+  const productLabelSingular = getDynamicLabel("Producto", rubro?.slug);
 
   const loadProducts = useCallback(
     async (pageNum = page) => {
@@ -266,7 +272,7 @@ export default function ProductsPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink>Productos</BreadcrumbLink>
+            <BreadcrumbLink>{productLabelPlural}</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -275,7 +281,7 @@ export default function ProductsPage() {
         <div className="sm:mb-0 mb-6">
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Package className="h-6 w-6" />
-            Catálogo de Productos
+            Catálogo de {productLabelPlural}
           </h1>
           <p className="text-muted-foreground">
             Gestiona el inventario, precios y variantes.
@@ -337,7 +343,7 @@ export default function ProductsPage() {
               }}
               className="bg-secondary hover:bg-secondary/80 shadow-sm text-white hover:cursor-pointer"
             >
-              <Plus className="mr-2 h-4 w-4" /> Nuevo Producto
+              <Plus className="mr-2 h-4 w-4" /> Nuevo {productLabelSingular}
             </Button>
           )}
         </div>

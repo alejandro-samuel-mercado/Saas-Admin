@@ -408,6 +408,68 @@ export default function ContentPage() {
                                         setConfig({...config, customPageVideos: newArr} as any)
                                     }}><Plus className="w-4 h-4 mr-2" /> Agregar Video YouTube</Button>
                                 </div>
+
+                                {/* CRONOLOGÍA (SOBRE NOSOTROS) */}
+                                <div className="space-y-4 md:col-span-2 mt-4 border-t pt-6">
+                                    <Label className="text-xl font-semibold border-b pb-2 flex">Cronología / Historia (Sobre Nosotros)</Label>
+                                    <p className="text-xs text-muted-foreground -mt-2">Esta sección aparecerá de forma dinámica en la página "Sobre Nosotros" o "Nuestra Historia".</p>
+                                    
+                                    <div className="space-y-4">
+                                        {((config as any).customPageChronology || []).map((item: any, i: number) => (
+                                            <div key={i} className="flex gap-4 items-start bg-gray-50/50 p-4 rounded-xl border">
+                                                <div className="space-y-4 flex-1">
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <Label>Año / Fecha</Label>
+                                                            <Input 
+                                                                placeholder="Ej: 2014"
+                                                                value={item.year || ''}
+                                                                onChange={(e) => {
+                                                                    const newArr = [...((config as any).customPageChronology || [])]
+                                                                    newArr[i] = { ...newArr[i], year: e.target.value }
+                                                                    setConfig({...config, customPageChronology: newArr} as any)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label>Título / Hito</Label>
+                                                            <Input 
+                                                                placeholder="Ej: Expansión Nacional"
+                                                                value={item.title || ''}
+                                                                onChange={(e) => {
+                                                                    const newArr = [...((config as any).customPageChronology || [])]
+                                                                    newArr[i] = { ...newArr[i], title: e.target.value }
+                                                                    setConfig({...config, customPageChronology: newArr} as any)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label>Descripción</Label>
+                                                        <Textarea 
+                                                            placeholder="Descripción del hito..."
+                                                            value={item.desc || ''}
+                                                            onChange={(e) => {
+                                                                const newArr = [...((config as any).customPageChronology || [])]
+                                                                newArr[i] = { ...newArr[i], desc: e.target.value }
+                                                                setConfig({...config, customPageChronology: newArr} as any)
+                                                            }}
+                                                            className="min-h-[80px]"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <Button variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-red-50" size="icon" onClick={() => {
+                                                    const newArr = ((config as any).customPageChronology || []).filter((_: any, idx: number) => idx !== i)
+                                                    setConfig({...config, customPageChronology: newArr} as any)
+                                                }}><Trash className="w-5 h-5" /></Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Button variant="outline" className="w-full border-dashed mt-2" onClick={() => {
+                                        const newArr = [...((config as any).customPageChronology || []), { year: '', title: '', desc: '' }]
+                                        setConfig({...config, customPageChronology: newArr} as any)
+                                    }}><Plus className="w-4 h-4 mr-2" /> Agregar Hito (Cronología)</Button>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
