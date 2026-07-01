@@ -341,7 +341,7 @@ export default function ContentPage() {
                                 <div className="space-y-4">
                                     <Label className="text-xl font-semibold border-b pb-2 flex">Textos Extra / Párrafos</Label>
                                     <div className="space-y-2 pb-2">
-                                        <Label className="text-muted-foreground">Título de la sección</Label>
+                                        <Label className="text-muted-foreground">Título de la sección (o Estadísticas ej: 10+|Años, 100%|Calidad)</Label>
                                         <Input 
                                             placeholder="Ej: Más Información"
                                             value={(config as any).customPageTextsSubtitle || ''}
@@ -358,7 +358,7 @@ export default function ContentPage() {
                                                     newArr[i] = e.target.value
                                                     setConfig({...config, customPageTexts: newArr} as any)
                                                 }}
-                                                placeholder="Ej: Historia, visión, valores..."
+                                                placeholder="Ej: Historia... O Formato Avanzado: Título|Descripción"
                                                 className="min-h-[100px]"
                                             />
                                             <Button variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-red-50" size="icon" onClick={() => {
@@ -469,6 +469,54 @@ export default function ContentPage() {
                                         const newArr = [...((config as any).customPageChronology || []), { year: '', title: '', desc: '' }]
                                         setConfig({...config, customPageChronology: newArr} as any)
                                     }}><Plus className="w-4 h-4 mr-2" /> Agregar Hito (Cronología)</Button>
+                                </div>
+
+                                {/* FAQ */}
+                                <div className="space-y-4 md:col-span-2 mt-4 border-t pt-6">
+                                    <Label className="text-xl font-semibold border-b pb-2 flex">Preguntas Frecuentes (FAQ)</Label>
+                                    <p className="text-xs text-muted-foreground -mt-2">Estas preguntas y respuestas se mostrarán en la página de Preguntas Frecuentes de la tienda.</p>
+                                    
+                                    <div className="space-y-4">
+                                        {((config as any).customPageFaq || []).map((item: any, i: number) => (
+                                            <div key={i} className="flex gap-4 items-start bg-gray-50/50 p-4 rounded-xl border">
+                                                <div className="space-y-3 flex-1">
+                                                    <div className="space-y-2">
+                                                        <Label>Pregunta</Label>
+                                                        <Input 
+                                                            placeholder="Ej: ¿Cuánto tiempo antes debo reservar?"
+                                                            value={item.question || ''}
+                                                            onChange={(e) => {
+                                                                const newArr = [...((config as any).customPageFaq || [])]
+                                                                newArr[i] = { ...newArr[i], question: e.target.value }
+                                                                setConfig({...config, customPageFaq: newArr} as any)
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label>Respuesta</Label>
+                                                        <Textarea 
+                                                            placeholder="Escribí la respuesta aquí..."
+                                                            value={item.answer || ''}
+                                                            onChange={(e) => {
+                                                                const newArr = [...((config as any).customPageFaq || [])]
+                                                                newArr[i] = { ...newArr[i], answer: e.target.value }
+                                                                setConfig({...config, customPageFaq: newArr} as any)
+                                                            }}
+                                                            className="min-h-[80px]"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <Button variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-red-50" size="icon" onClick={() => {
+                                                    const newArr = ((config as any).customPageFaq || []).filter((_: any, idx: number) => idx !== i)
+                                                    setConfig({...config, customPageFaq: newArr} as any)
+                                                }}><Trash className="w-5 h-5" /></Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Button variant="outline" className="w-full border-dashed mt-2" onClick={() => {
+                                        const newArr = [...((config as any).customPageFaq || []), { question: '', answer: '' }]
+                                        setConfig({...config, customPageFaq: newArr} as any)
+                                    }}><Plus className="w-4 h-4 mr-2" /> Agregar Pregunta Frecuente</Button>
                                 </div>
                             </div>
                         </CardContent>
