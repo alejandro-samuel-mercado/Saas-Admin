@@ -65,10 +65,12 @@ api.interceptors.request.use(
                 }
             }
             
-            // Permitir sobrescribir vía localStorage si el usuario lo define explícitamente en el login
-            const localTenant = localStorage.getItem('dev-tenant-id');
-            if (localTenant) {
-                tenantId = localTenant;
+            // Permitir sobrescribir vía localStorage SOLO en entorno de desarrollo local
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                const localTenant = localStorage.getItem('dev-tenant-id');
+                if (localTenant) {
+                    tenantId = localTenant;
+                }
             }
         }
         
