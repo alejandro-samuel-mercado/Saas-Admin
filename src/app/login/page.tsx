@@ -12,6 +12,7 @@ import { useEffect, useState } from "react"
 export default function LoginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [tenant, setTenant] = useState("")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const [returnUrl, setReturnUrl] = useState<string | null>(null)
@@ -24,6 +25,9 @@ export default function LoginPage() {
             const params = new URLSearchParams(window.location.search)
             const url = params.get('returnUrl')
             if (url) setReturnUrl(decodeURIComponent(url))
+            
+            const localTenant = localStorage.getItem('dev-tenant-id')
+            if (localTenant) setTenant(localTenant)
         }
     }, [])
 
@@ -38,6 +42,9 @@ export default function LoginPage() {
         setError("")
         setLoading(true)
         try {
+            if (tenant) {
+                localStorage.setItem('dev-tenant-id', tenant);
+            }
             const { data } = await api.post('/auth/login', { email, password })
             
             if (data.success) {
@@ -82,20 +89,32 @@ export default function LoginPage() {
                 <form onSubmit={handleLogin}>
                     <CardContent className="space-y-4 px-8 pb-4">
                         <div className="space-y-4 pt-2">
+                             <div className="group relative mb-2">
+                                 <div className="absolute left-3 top-3 h-4 w-4 text-zinc-500 dark:text-gray-300 z-10 flex items-center justify-center font-bold text-xs">@</div>
+                                 <Input 
+                                     id="tenant" 
+                                     type="text" 
+                                     placeholder="Slug del Negocio (ej: tienda-demo)"
+                                     className="pl-9 h-11 bg-gray-200 dark:bg-gray-200 text-black border-zinc-800 focus:border-zinc-600 focus:ring-0 text-sm transition-all"
+                                     value={tenant}
+                                     onChange={(e) => setTenant(e.target.value)}
+                                     required 
+                                 />
+                             </div>
                              <div className="group relative mb-6">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-500 dark:text-gray-300 focus:bg-red-500/10 transition-colors z-100" />
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-500 dark:text-gray-300 focus:bg-red-500/10 transition-colors z-10" />
                                 <Input 
                                     id="email" 
                                     type="email" 
                                     placeholder="name@example.com"
-                                    className="pl-9 h-11 bg-gray-200 dark:bg-gray-200 text-black border-zinc-800 focus:border-zinc-600 focus:ring-0  text-sm transition-all"
+                                    className="pl-9 h-11 bg-gray-200 dark:bg-gray-200 text-black border-zinc-800 focus:border-zinc-600 focus:ring-0 text-sm transition-all"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required 
                                 />
                             </div>
                             <div className="group relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-500 dark:text-gray-300 focus:bg-red-500/10 transition-colors z-100" />
+                                <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-500 dark:text-gray-300 focus:bg-red-500/10 transition-colors z-10" />
                                 <Input 
                                     id="password" 
                                     type="password" 

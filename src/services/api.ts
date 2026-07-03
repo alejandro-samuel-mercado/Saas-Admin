@@ -63,10 +63,12 @@ api.interceptors.request.use(
                         tenantId = parts[0];
                     }
                 }
-            } else {
-                // En desarrollo local, permitir sobrescribir vía localStorage para pruebas fáciles
-                const localTenant = localStorage.getItem('dev-tenant-id');
-                if (localTenant) tenantId = localTenant;
+            }
+            
+            // Permitir sobrescribir vía localStorage si el usuario lo define explícitamente en el login
+            const localTenant = localStorage.getItem('dev-tenant-id');
+            if (localTenant) {
+                tenantId = localTenant;
             }
         }
         
