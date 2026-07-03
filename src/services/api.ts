@@ -43,7 +43,7 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         // 0. Tenant ID - Resolución Dinámica (Multi-Tenant SaaS)
-        let tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+        let tenantId = 'default';
         
         if (typeof window !== 'undefined') {
             const hostname = window.location.hostname;
@@ -58,7 +58,7 @@ api.interceptors.request.use(
                     const sub = parts[0].toLowerCase();
                     const systemSubdomains = ['saas', 'www', 'admin', 'panel', 'api'];
                     if (systemSubdomains.includes(sub)) {
-                        tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+                        tenantId = 'default';
                     } else {
                         tenantId = parts[0];
                     }
@@ -74,13 +74,20 @@ api.interceptors.request.use(
         
         config.headers['x-tenant-id'] = tenantId || 'default';
 
-        // 1. Token de Autenticación
+        // 1. Token de Autenticación y Tenant del Usuario
         if (typeof window !== 'undefined') {
             const storage = sessionStorage.getItem('admin-auth-storage')
             if (storage) {
                 const { state } = JSON.parse(storage)
                 if (state?.token) {
                      config.headers.Authorization = `Bearer ${state.token}`
+                }
+                
+                // Si estamos en un panel global (tenantId === 'default' u originado del .env) 
+                // pero ya tenemos un usuario logueado, inyectamos el tenantId verdadero del usuario.
+                if (state?.user?.tenantId && (!tenantId || tenantId === 'default' || tenantId === process.env.NEXT_PUBLIC_TENANT_ID)) {
+                    tenantId = state.user.tenantId;
+                    config.headers['x-tenant-id'] = tenantId;
                 }
             }
         }
