@@ -12,7 +12,6 @@ import { BranchSelector } from "./branch-selector"
 import { GlobalSearch } from "./global-search"
 import { NotificationBell } from "./notifications/notification-bell"
 import { Sidebar } from "./sidebar"
-import { SystemHealth } from "./system-health"
 
 export function Header() {
     const { user, logout } = useAuthStore()
@@ -69,14 +68,7 @@ export function Header() {
                         </div>
                     </div>
                 )}
-                {showAlerts && (
-                    <div className="hidden min-[500px]:flex flex-col items-center">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider">Alertas</span>
-                        <div className="scale-90 origin-right text-white [&_button]:text-white">
-                        <SystemHealth />
-                        </div>
-                    </div>
-                )}
+               
                 <div className="flex items-center gap-1 sm:gap-2">
                      {showAudit && (
                          <Button 

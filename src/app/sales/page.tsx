@@ -42,7 +42,7 @@ export default function SalesPage() {
                     <TabsList className="w-full justify-start h-auto md:h-12 rounded-none bg-transparent p-0 overflow-x-auto flex-wrap md:flex-nowrap">
                         <TabsTrigger value="registro" className="h-12 md:h-full rounded-none border-b-2 border-transparent px-4 md:px-6 data-[state=active]:border-secondary data-[state=active]:bg-muted hover:bg-muted/50 transition-colors whitespace-nowrap">Registrar Venta</TabsTrigger>
                         <TabsTrigger value="historial" className="h-12 md:h-full rounded-none border-b-2 border-transparent px-4 md:px-6 data-[state=active]:border-secondary  data-[state=active]:bg-muted hover:bg-muted/50  transition-colors whitespace-nowrap">Historial</TabsTrigger>
-                        <TabsTrigger value="mercadopago" className="h-12 md:h-full rounded-none border-b-2 border-transparent px-4 md:px-6 data-[state=active]:border-secondary data-[state=active]:bg-muted hover:bg-muted/50 transition-colors whitespace-nowrap">Mercado Pago</TabsTrigger>
+                       
 
                         <div className="flex gap-2 flex-wrap md:flex-nowrap w-full justify-start md:justify-end px-4 md:px-6 py-2 md:py-0 items-center">
                             <BranchSelector />

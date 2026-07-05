@@ -8,10 +8,10 @@ import { useConfigStore, useRubro } from "@/store/config.store"
 import { useAuthStore } from "@/store/use-auth-store"
 import { UserRole } from "@/types/schema"
 import {
-    ChevronDown,
-    ChevronLeft,
-    ChevronRight,
-    ChevronUp
+      ChevronDown,
+      ChevronLeft,
+      ChevronRight,
+      ChevronUp
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -208,7 +208,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                 )}
                 {config?.rolePermissions?.[userRole]?.alerts !== false && (
                     <div className="min-[500px]:hidden w-full flex flex-col items-start pb-4">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70 pb-1">Alertas</span>
+                      
                         <div className="scale-90 origin-left text-white [&_button]:text-white">
                             <SystemHealth />
                         </div>

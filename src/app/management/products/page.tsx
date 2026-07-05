@@ -140,7 +140,7 @@ export default function ProductsPage() {
           Precio_SKU: p.basePrice,
           Stock_Inicial: 0,
           Codigo_Barras: "-",
-          Puntos_Recompensa: p.pointsReward,
+
           Estado: p.isActive ? "ACTIVE" : "INACTIVO",
         });
       } else {
@@ -159,7 +159,7 @@ export default function ProductsPage() {
             Precio_SKU: sku.price,
             Stock_Inicial: sku.stock || 0,
             Codigo_Barras: sku.barcode || "-",
-            Puntos_Recompensa: p.pointsReward,
+
             Estado: p.isActive ? "ACTIVE" : "INACTIVO",
           });
         });

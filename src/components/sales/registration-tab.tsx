@@ -478,8 +478,19 @@ export function RegistrationTab() {
                                     useDataStore.getState().setUsers([...users, newUser]);
                                     setClient(newUser);
                                 }
-                            } catch (e) {
-                                console.error("Error creating default customer", e);
+                            } catch (e: any) {
+                                // En caso de condición de carrera (React Strict Mode) o si el usuario
+                                // existía pero no estaba en la primera página de resultados.
+                                console.warn("Error creando Consumidor Final, intentando recuperarlo:", e);
+                                try {
+                                    const searchRes = await UsersAPI.getAll({ search: "consumidor.final@local.pos" });
+                                    const foundUsers = searchRes?.data?.data || searchRes?.data || [];
+                                    if (foundUsers.length > 0) {
+                                        setClient(foundUsers[0]);
+                                    }
+                                } catch (searchErr) {
+                                    console.error("No se pudo recuperar al consumidor final:", searchErr);
+                                }
                             }
                         }
                     }
@@ -1870,89 +1881,7 @@ export function RegistrationTab() {
                                         </div>
                                     )}
 
-                                {/* CANJE DE PUNTOS */}
-                                {client && storeConfig?.enablePoints && (
-                                    <div className="space-y-3 pt-4 border-t border-border">
-                                        <div className="flex justify-between items-center">
-                                            <Label
-                                                className={cn(
-                                                    "text-xs font-bold uppercase flex items-center gap-1",
-                                                    storeConfig?.enablePointsRedemption
-                                                        ? "text-indigo-600 dark:text-indigo-400"
-                                                        : "text-muted-foreground",
-                                                )}
-                                            >
-                                                <Award className="w-3 h-3" /> Puntos Disponibles
-                                            </Label>
-                                            <span
-                                                className={cn(
-                                                    "font-mono text-sm font-bold",
-                                                    storeConfig?.enablePointsRedemption
-                                                        ? "text-indigo-500 dark:text-indigo-300"
-                                                        : "text-muted-foreground",
-                                                )}
-                                            >
-                                                {client.points || 0} pts
-                                            </span>
-                                        </div>
 
-                                        {storeConfig?.enablePointsRedemption ? (
-                                            <div className="flex gap-2 items-end">
-                                                <div className="flex-1 space-y-1">
-                                                    <Input
-                                                        type="number"
-                                                        inputMode="numeric"
-                                                        value={pointsToUse > 0 ? pointsToUse : ""}
-                                                        onChange={(e) => {
-                                                            const val = parseInt(e.target.value) || 0;
-
-                                                            const max = client.points || 0;
-                                                            setPointsToUse(Math.min(val, max));
-                                                        }}
-                                                        placeholder="Canjear Puntos..."
-                                                        className="bg-input border-input text-foreground font-bold placeholder:text-muted-foreground h-8 text-xs focus-visible:ring-indigo-500"
-                                                        disabled={
-                                                            !client.points ||
-                                                            client.points <= 0 ||
-                                                            isValidatingCoupon ||
-                                                            isProcessing
-                                                        }
-                                                    />
-                                                </div>
-                                                <div className="pb-1">
-                                                    {pointsToUse > 0 ? (
-                                                        <Badge
-                                                            variant="outline"
-                                                            className="text-xs border-indigo-500 text-indigo-400 font-mono"
-                                                        >
-                                                            -
-                                                            {formatCurrency(
-                                                                pointsToUse *
-                                                                (Number(storeConfig.moneyPerPoint) || 0),
-                                                                storeConfig?.baseCurrency || "USD",
-                                                                storeConfig?.currencySymbol,
-                                                            )}
-                                                        </Badge>
-                                                    ) : (
-                                                        <span className="text-[10px] text-muted-foreground">
-                                                            Valor:{" "}
-                                                            {formatCurrency(
-                                                                Number(storeConfig?.moneyPerPoint || 0),
-                                                                storeConfig?.baseCurrency || "USD",
-                                                                storeConfig?.currencySymbol,
-                                                            )}
-                                                            /pt
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <p className="text-[10px] text-zinc-600 italic">
-                                                El canje de puntos está desactivado en la configuración.
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </CardContent>
@@ -1969,22 +1898,7 @@ export function RegistrationTab() {
                                 )}
                             </span>
                         </div>
-                        {storeConfig?.enablePoints && (
-                            <div className="flex justify-between items-center text-amber-500 font-bold text-xs px-2">
-                                <span className="flex items-center gap-1">
-                                    <Award className="w-3 h-3" /> PUNTOS A GANAR:
-                                </span>
-                                <span>
-                                    +
-                                    {items.reduce(
-                                        (acc, item) =>
-                                            acc + (item.pointsReward || 0) * item.quantity,
-                                        0,
-                                    )}{" "}
-                                    pts
-                                </span>
-                            </div>
-                        )}
+
 
                         <POSCalculator
                             total={total}

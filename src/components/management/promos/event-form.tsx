@@ -510,13 +510,7 @@ export function EventForm({ initialData, onSuccess, onCancel }: EventFormProps) 
                         </div>
                         <Switch checked={couponsEnabled} onCheckedChange={setCouponsEnabled} />
                     </div>
-                    <div className="flex items-center justify-between pt-2">
-                        <div className="space-y-0.5">
-                            <Label>Acumular Puntos</Label>
-                            <p className="text-xs text-muted-foreground">Habilitar suma de puntos por compras.</p>
-                        </div>
-                        <Switch checked={pointsEnabled} onCheckedChange={setPointsEnabled} />
-                    </div>
+
                 </TabsContent>
             </Tabs>
 

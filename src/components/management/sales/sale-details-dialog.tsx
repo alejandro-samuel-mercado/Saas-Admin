@@ -62,7 +62,7 @@ export function SaleDetailsDialog({ open, onOpenChange, sale, onSaleUpdated }: S
         setIsRefunding(true)
         try {
             await SalesAPI.refund(sale.id, { reason: refundReason })
-            toast.success("Venta anulada correctamente. Stock y puntos revertidos.")
+            toast.success("Venta anulada correctamente. Stock revertido.")
             setIsRefundDialogOpen(false)
             setRefundReason("")
             onSaleUpdated()
@@ -208,7 +208,7 @@ export function SaleDetailsDialog({ open, onOpenChange, sale, onSaleUpdated }: S
                                                 <SelectItem value="CARD">TARJETA</SelectItem>
                                                 <SelectItem value="DEBIT">DEBITO</SelectItem>
                                                 <SelectItem value="MERCADO_PAGO">MERCADO PAGO</SelectItem>
-                                                <SelectItem value="POINTS">PUNTOS</SelectItem>
+                                               
                                                 <SelectItem value="QR">QR</SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -221,7 +221,7 @@ export function SaleDetailsDialog({ open, onOpenChange, sale, onSaleUpdated }: S
                                         <div className="mt-0.5"> </div>
                                         <div>
                                             <p className="font-semibold uppercase text-[10px] mb-0.5">Cancelación sin reintegro monetario</p>
-                                            <p className="opacity-90 leading-tight">Esta acción devolverá el stock y puntos usados, pero <strong className="font-semibold">no reembolsará el dinero automáticamente</strong>. Debes hacerlo manualmente en la pasarela de pagos.</p>
+                                            <p className="opacity-90 leading-tight">Esta acción devolverá el stock usado, pero <strong className="font-semibold">no reembolsará el dinero automáticamente</strong>. Debes hacerlo manualmente en la pasarela de pagos.</p>
                                         </div>
                                     </div>
                                 )}
@@ -554,7 +554,7 @@ export function SaleDetailsDialog({ open, onOpenChange, sale, onSaleUpdated }: S
                 </DialogHeader>
                 <div className="py-4 space-y-4">
                     <p className="text-sm text-foreground">
-                        Esta acción cancelará la venta, retornará el stock físico al inventario de la sucursal y revertirá los puntos de fidelidad involucrados en la orden.
+                        Esta acción cancelará la venta y retornará el stock físico al inventario de la sucursal.
                     </p>
                     <div className="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md border border-amber-200 dark:border-amber-900/50">
                         <p className="text-xs text-amber-800 dark:text-amber-400 font-bold uppercase mb-1">  Atención Administrativa</p>

@@ -180,15 +180,7 @@ export  function ProductDetailsClient() {
                                     </div>
                                 </div>
 
-                                <div className="pt-2">
-                                    <h4 className="text-xs font-medium text-muted-foreground uppercase mb-2">Puntos</h4>
-                                    <div className="flex gap-4">
 
-                                        <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 rounded-md text-sm font-medium border border-emerald-100 dark:border-emerald-800">
-                                            Gana: {product.pointsReward} pts
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </Card>

@@ -117,7 +117,7 @@ export default function GatewayManagementPage() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem><BreadcrumbLink href="/management/settings">Configuración</BreadcrumbLink></BreadcrumbItem>
                     <BreadcrumbSeparator />
-                    <BreadcrumbItem><BreadcrumbLink>Pasarelas de Pago</BreadcrumbLink></BreadcrumbItem>
+                    
                 </BreadcrumbList>
             </Breadcrumb>
 

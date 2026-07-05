@@ -737,26 +737,7 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
                                     </div>
                                 </div>
 
-                                {/* Tarjeta de Puntos */}
-                                <div className="space-y-4 p-5 rounded-xl bg-card border border-border shadow-sm">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="h-8 w-1 bg-borderH rounded-full"></div>
-                                        <h3 className="font-semibold text-lg text-foreground">Sistema de Puntos</h3>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2 col-span-2">
-                                            <Label className="text-foreground">Puntos que Otorga al Comprador</Label>
-                                            <Input
-                                                type="number"
-                                                inputMode="numeric"
-                                                value={formData.pointsReward}
-                                                onChange={(e) => setFormData({ ...formData, pointsReward: parseInt(e.target.value) })}
-                                                className="bg-background border-input text-foreground"
-                                            />
-                                            <p className="text-xs text-muted-foreground">Al comprar</p>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
 
                             {/* Etiquetas */}

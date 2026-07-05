@@ -1,12 +1,11 @@
 "use client";
 
-import { StoreConfig } from "@/types/extended";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { ShieldCheck, UserCog, Users, Lock, ChevronRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { adminNavigation } from "@/config/admin-navigation";
+import { StoreConfig } from "@/types/extended";
+import { ChevronRight, Lock, ShieldCheck, UserCog, Users } from "lucide-react";
 
 export function AccessControlManager({
     config,
@@ -47,15 +46,15 @@ export function AccessControlManager({
         { key: "sales", label: "Ventas y Facturación" },
         { key: "administration", label: "Administración (Cat, Cup, Desc)" },
         { key: "shipping", label: "Configuración de Envíos" },
-        { key: "payment_gateways", label: "Pasarelas de Pago" },
+       
         { key: "comments", label: "Moderación de Comentarios" },
-        { key: "events", label: "Gestión de Eventos / Banners" },
+        
         { key: "bot_assistant", label: "Configuración Asistente Bot" },
-        { key: "blog", label: "Gestión del Blog" },
+       
         { key: "web_content", label: "Contenido Web / Estático" },
         { key: "settings", label: "Configuración del Sistema" },
         { key: "audit", label: "Auditoría de Acciones" },
-        { key: "alerts", label: "Alertas de Sistema" },
+       
     ];
 
     const RolePanel = ({ role, icon: Icon, title }: { role: string; icon: any; title: string }) => (

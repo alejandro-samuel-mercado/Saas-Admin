@@ -1,7 +1,7 @@
 "use client";
 
 import { SystemService } from "@/services/system-service";
-import { Activity, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Activity, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -33,12 +33,7 @@ export function SystemHealth() {
                     icon: <ShieldCheck className="w-4 h-4" />,
                     text: "Seguro"
                 };
-            case 'WARNING':
-                return {
-                    color: "text-orange-400 bg-orange-400/10 border-orange-400/20",
-                    icon: <ShieldAlert className="w-4 h-4 text-orange-400" />,
-                    text: `${alerts} Alertas`
-                };
+            
             case 'ERROR':
                 return {
                     color: "text-red-400 bg-red-400/10 border-red-400/20",
@@ -52,9 +47,9 @@ export function SystemHealth() {
 
     return (
         <Link href="/management/system/alerts">
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium cursor-pointer transition-all hover:bg-white/5 ${config.color}`}>
-                {config.icon}
-                <span className="hidden lg:inline">{config.text}</span>
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium cursor-pointer transition-all hover:bg-white/5 ${config?.color}`}>
+                {config?.icon}
+                <span className="hidden lg:inline">{config?.text}</span>
                 {status !== 'OK' && (
                      <span className="relative flex h-2 w-2 ml-1">
                         <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${status === 'WARNING' ? 'bg-orange-400' : 'bg-red-400'}`}></span>

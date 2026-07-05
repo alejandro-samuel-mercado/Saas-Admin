@@ -1,25 +1,25 @@
 
 import {
-    AlertCircle,
-    Archive,
-    ArrowLeftRight,
-    Bot,
-    Calendar,
-    CirclePercent,
-    DollarSign,
-    FileText,
-    Globe,
-    LayoutDashboard,
-    MessageSquare,
-    Package,
-    PieChart,
-    Settings,
-    ShoppingCart,
-    Store,
-    Tags,
-    TicketPercent,
-    Truck,
-    Users, BadgeDollarSign, Wrench
+      Archive,
+      ArrowLeftRight,
+      BadgeDollarSign,
+      Bot,
+      CirclePercent,
+      DollarSign,
+      FileText,
+      Globe,
+      LayoutDashboard,
+      MessageSquare,
+      Package,
+      PieChart,
+      Settings,
+      ShoppingCart,
+      Store,
+      Tags,
+      TicketPercent,
+      Truck,
+      Users,
+      Wrench
 } from "lucide-react"
 
 export interface NavItem {
@@ -208,14 +208,7 @@ export const adminNavigation: NavItem[] = [
                 permissionKey: 'shipping',
                 moduleKey: 'shipping'
             },
-            {
-                title: "Pasarelas de Pago",
-                icon: DollarSign,
-                href: "/management/settings/gateways",
-                roles: ['SUPER_ADMIN'],
-                permissionKey: 'payment_gateways',
-                moduleKey: 'payment_gateways'
-            },
+           
     {
         title: "Comentarios",
         icon: MessageSquare,
@@ -223,14 +216,7 @@ export const adminNavigation: NavItem[] = [
         roles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'],
         permissionKey: 'comments'
     },
-    {
-        title: "Eventos",
-        icon: Calendar,
-        href: "/management/events",
-        roles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'],
-        permissionKey: 'events',
-        moduleKey: 'events'
-    },
+  
       {
                 title: "Asistente Bot",
                 href: "/management/bot",
@@ -239,14 +225,7 @@ export const adminNavigation: NavItem[] = [
                 permissionKey: 'bot_assistant',
                 moduleKey: 'bot'
             },
-              {
-                title: "Blog",
-                href: "/management/content/blog",
-                icon: FileText,
-                roles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'],
-                permissionKey: 'blog',
-                moduleKey: 'blog'
-            },
+             
     {
         title: "Contenido Web",
         href: "/management/content",
@@ -260,8 +239,7 @@ export const adminNavigation: NavItem[] = [
          href: "/management/settings",
                 icon: Settings,
         roles: ['SUPER_ADMIN'],
-        permissionKey: 'settings',
-        moduleKey: 'settings'
+        permissionKey: 'settings'
     },
     {
         title: "Auditoría",
@@ -272,13 +250,5 @@ export const adminNavigation: NavItem[] = [
         permissionKey: 'audit',
         moduleKey: 'audit'
     },
-    {
-        title: "Alertas",
-        href: "/management/system/alerts",
-        icon: AlertCircle,
-        roles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'],
-        hidden: true,
-        permissionKey: 'alerts',
-        moduleKey: 'alerts'
-    },
+   
 ]

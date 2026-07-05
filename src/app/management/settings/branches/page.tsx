@@ -14,12 +14,14 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast"
+import { useConfigStore } from "@/store/config.store"
 import branchService from "@/services/branch.service"
 import { Branch } from "@/types/schema"
 import { Edit, Loader2, MapPin, Plus, Settings2, Store, Trash2 } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
 export default function BranchesPage() {
+    const { config } = useConfigStore()
     const { toast } = useToast()
     const [branches, setBranches] = useState<Branch[]>([])
     const [loading, setLoading] = useState(true)
@@ -65,6 +67,15 @@ export default function BranchesPage() {
         } catch (error: any) {
             toast({ title: "Error", description: error.response?.data?.message || "No se pudo eliminar", variant: "destructive" })
         }
+    }
+
+    if (config && !config.planInfo?.enabledModules?.includes('branches')) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <h1 className="text-xl font-bold">Módulo no contratado</h1>
+                <p className="text-muted-foreground text-sm">El módulo de sucursales no está disponible en tu plan actual.</p>
+            </div>
+        )
     }
 
     return (

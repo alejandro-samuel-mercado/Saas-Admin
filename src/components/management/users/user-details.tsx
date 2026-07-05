@@ -12,22 +12,22 @@ import { Sale, User } from "@/types/schema";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
-  ArrowRightLeft,
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-  CreditCard,
-  DollarSign,
-  Download,
-  Edit2,
-  MapPin,
-  MessageSquare,
-  Package,
-  Phone,
-  Search,
-  ShoppingBag,
-  Star,
-  TrendingUp,
+      ArrowRightLeft,
+      Calendar,
+      ChevronDown,
+      ChevronUp,
+      CreditCard,
+      DollarSign,
+      Download,
+      Edit2,
+      MapPin,
+      MessageSquare,
+      Package,
+      Phone,
+      Search,
+      ShoppingBag,
+      Star,
+      TrendingUp,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SaleDetailsDialog } from "../sales/sale-details-dialog";
@@ -268,14 +268,7 @@ export function UserDetails({ user: initialUser, onClose }: UserDetailsProps) {
       <div className="flex-1 sm:p-6 pt-6 px-0 grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-1 space-y-6 px-4">
           <div className="grid sm:grid-cols-2 grid-cols-1 gap-4 px-2">
-            <div className="bg-card border border-border rounded-3xl p-5 flex flex-col items-center justify-center hover:border-border/80 transition-all shadow-sm">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                <Star size={12} className="text-amber-500" /> Puntos
-              </p>
-              <p className="text-3xl font-black text-foreground drop-shadow-sm">
-                {currentUser.points || 0}
-              </p>
-            </div>
+            
             <div className="bg-primary/80 border border-emerald-500/20 rounded-3xl p-5 flex flex-col items-center justify-center hover:bg-emerald-500/10 transition-all shadow-sm overflow-hidden text-center relative">
               <p className="text-[10px] font-bold text-gray-300 dark:text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                 <DollarSign size={12} className="text-gray-300" /> Gastado

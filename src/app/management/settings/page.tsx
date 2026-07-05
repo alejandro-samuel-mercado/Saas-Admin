@@ -1,60 +1,57 @@
 "use client";
 
+import { AccessControlManager } from "@/components/admin/access-control-manager";
+import { BankAccountsManager } from "@/components/admin/bank-accounts-manager";
+import { ThemeColorsManager } from "@/components/admin/theme-colors-manager";
 import { Badge } from "@/components/ui/badge";
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbSeparator,
+      Breadcrumb,
+      BreadcrumbItem,
+      BreadcrumbLink,
+      BreadcrumbList,
+      BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+      Card,
+      CardContent,
+      CardDescription,
+      CardHeader,
+      CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+      Select,
+      SelectContent,
+      SelectItem,
+      SelectTrigger,
+      SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { ThemeColorsManager } from "@/components/admin/theme-colors-manager";
-import { AccessControlManager } from "@/components/admin/access-control-manager";
-import { BankAccountsManager } from "@/components/admin/bank-accounts-manager";
 import { ConfigAPI, CurrenciesAPI } from "@/services/api";
 import { useConfigStore } from "@/store/config.store";
 import { useAuthStore } from "@/store/use-auth-store";
 import { StoreConfig } from "@/types/extended";
 import {
-    AlertCircle,
-    Archive,
-    ArrowLeftRight,
-    Award,
-    Coins,
-    CreditCard,
-    FileText,
-    LayoutGrid,
-    Loader2,
-    Printer,
-    Ruler,
-    Save,
-    Settings,
-    Settings2,
-    ShieldCheck,
-    StopCircle,
-    Store,
-    Truck,
+      AlertCircle,
+      Archive,
+      Award,
+      Coins,
+      CreditCard,
+      LayoutGrid,
+      Loader2,
+      Printer,
+      Ruler,
+      Save,
+      Settings,
+      Settings2,
+      ShieldCheck,
+      StopCircle,
+      Truck
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -854,125 +851,7 @@ export default function SettingsPage() {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid gap-4 md:grid-cols-2">
-                                    {/* Puntos */}
-                                    {config.planInfo?.enabledModules?.includes('events') &&
-                                        config.planInfo?.enabledModules?.includes('sales') &&
-                                        config.planInfo?.enabledModules?.includes('shipping') &&
-                                        config.planInfo?.enabledModules?.some(m => ['stock', 'stock_movements'].includes(m)) && (
-                                            <div
-                                                className={`p-4 rounded-lg border flex flex-col  border-4 justify-between ${config.enablePoints ? " border-gray-300/80 dark:bg-indigo-900/10" : "bg-slate-50 border-red-500/20 dark:bg-slate-900/50"}`}
-                                            >
-                                                <div className="space-y-3">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center space-x-2">
-                                                            <div
-                                                                className={`p-2 rounded-full ${config.enablePoints ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900" : "bg-slate-100 text-slate-500"}`}
-                                                            >
-                                                                <Award className="h-4 w-4" />
-                                                            </div>
-                                                            <Label className="font-semibold">
-                                                                Sistema de Puntos
-                                                            </Label>
-                                                        </div>
-                                                        <Switch
-                                                            checked={
-                                                                activeEvent
-                                                                    ? !!activeEvent.pointsEnabled
-                                                                    : (config.enablePoints ?? true)
-                                                            }
-                                                            onCheckedChange={(c) =>
-                                                                setConfig({ ...config, enablePoints: c })
-                                                            }
-                                                            disabled={!!activeEvent}
-                                                        />
-                                                    </div>
-
-                                                    {config.enablePoints && (
-                                                        <div className="pt-3 border-t border-indigo-200 dark:border-indigo-800 space-y-3 animate-in fade-in">
-                                                            <div className="flex items-center justify-between">
-                                                                <Label className="text-xs font-bold dark:text-indigo-200">
-                                                                    Habilitar Canje
-                                                                </Label>
-                                                                <Switch
-                                                                    checked={config.enablePointsRedemption || false}
-                                                                    onCheckedChange={(c) =>
-                                                                        setConfig({
-                                                                            ...config,
-                                                                            enablePointsRedemption: c,
-                                                                        })
-                                                                    }
-                                                                    className="scale-90"
-                                                                    disabled={!!activeEvent}
-                                                                />
-                                                            </div>
-                                                            {config.enablePointsRedemption && (
-                                                                <div className="space-y-1">
-                                                                    <Label className="text-xs font-bold dark:text-indigo-200">
-                                                                        Valor de 1 Punto ($)
-                                                                    </Label>
-                                                                    <div className="relative">
-                                                                        <span className="absolute left-2 top-1.5 text-xs text-muted-foreground">
-                                                                            $
-                                                                        </span>
-                                                                        <input
-                                                                            type="number"
-                                                                            step="any"
-                                                                            inputMode="decimal"
-                                                                            className="border border-gray-400 h-8 pl-5 text-xs bg-white text-black dark:bg-slate-950 font-bold w-full"
-                                                                            value={config.moneyPerPoint || 0}
-                                                                            onChange={(e) =>
-                                                                                setConfig({
-                                                                                    ...config,
-                                                                                    moneyPerPoint: parseFloat(e.target.value),
-                                                                                })
-                                                                            }
-                                                                        />
-                                                                    </div>
-                                                                    <p className="text-[10px] text-muted-foreground">
-                                                                        Cuánto dinero descuenta 1 punto al canjear.
-                                                                    </p>
-                                                                </div>
-                                                            )}
-
-                                                            <div className="space-y-1">
-                                                                <Label className="text-xs font-bold dark:text-indigo-200">
-                                                                    Tasa de obtención (Puntos por $1)
-                                                                </Label>
-                                                                <div className="relative">
-                                                                    <Award className="absolute left-2 top-1.5 h-3 w-3 text-amber-500" />
-                                                                    <input
-                                                                        type="number"
-                                                                        step="any"
-                                                                        inputMode="decimal"
-                                                                        className="border border-gray-400 h-8 pl-5 text-xs bg-white text-black dark:bg-slate-950 font-bold w-full"
-                                                                        value={config.pointsPerCurrency || 0}
-                                                                        onChange={(e) =>
-                                                                            setConfig({
-                                                                                ...config,
-                                                                                pointsPerCurrency: parseFloat(e.target.value),
-                                                                            })
-                                                                        }
-                                                                    />
-                                                                </div>
-                                                                <p className="text-[10px] text-muted-foreground">
-                                                                    Ej: 0.001 significa que $1000 = 1 punto.
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {activeEvent && (
-                                                        <div className="flex items-center text-amber-600 text-[10px] bg-amber-50 p-2 rounded border border-amber-100 mt-2">
-                                                            <AlertCircle className="h-3 w-3 mr-2" />
-                                                            <span>
-                                                                Restringido por evento activo:{" "}
-                                                                <strong>{activeEvent.name}</strong>
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
+                              
 
                                     {/* Envíos Toggle Only */}
                                     <div
@@ -1307,16 +1186,7 @@ export default function SettingsPage() {
                             <CardDescription>
                                 Selecciona qué métodos de pago aceptas en la tienda.
                             </CardDescription>
-                            {activeEvent && (
-                                <div className="mt-2 flex items-center text-amber-600 text-xs bg-amber-50 p-3 rounded-lg border border-amber-200">
-                                    <AlertCircle className="h-4 w-4 mr-2" />
-                                    <span>
-                                        La configuración de pagos está siendo controlada por el
-                                        evento activo: <strong>{activeEvent.name}</strong>. Para
-                                        editarla, ve al gestor de eventos.
-                                    </span>
-                                </div>
-                            )}
+                        
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
