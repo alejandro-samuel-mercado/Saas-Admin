@@ -1250,6 +1250,78 @@ export default function SettingsPage() {
                         </CardContent>
                     </Card>
 
+                    {/* SISTEMA DE PUNTOS */}
+                    {globalConfig?.planInfo?.features?.allowPointsSystem && (
+                        <Card className="border-orange-200 dark:border-orange-800">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Award className="h-5 w-5 text-orange-500" /> Sistema de Fidelización (Puntos)
+                                </CardTitle>
+                                <CardDescription>
+                                    Configura las recompensas por compras y si los clientes pueden pagar con puntos.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="flex items-center justify-between p-3 border rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                                    <div className="flex items-center space-x-3">
+                                        <Award className="text-xl text-orange-500" />
+                                        <div>
+                                            <Label className="font-semibold cursor-pointer" htmlFor="enable-points">Habilitar Sistema de Puntos</Label>
+                                            <p className="text-[10px] text-muted-foreground">Otorga puntos a los clientes por sus compras.</p>
+                                        </div>
+                                    </div>
+                                    <Switch
+                                        id="enable-points"
+                                        checked={config.enablePoints || false}
+                                        onCheckedChange={(c) => setConfig({ ...config, enablePoints: c })}
+                                    />
+                                </div>
+                                
+                                {config.enablePoints && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-dashed rounded-lg bg-orange-50/50 dark:bg-orange-900/10">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold text-orange-700 dark:text-orange-400">Puntos otorgados por cada {config.currencySymbol}1 gastado</Label>
+                                            <Input
+                                                type="number"
+                                                step="any"
+                                                inputMode="decimal"
+                                                value={config.pointsPerCurrency || 0}
+                                                onChange={(e) => setConfig({ ...config, pointsPerCurrency: parseFloat(e.target.value) || 0 })}
+                                            />
+                                            <p className="text-[10px] text-muted-foreground">Ej: Si pones 0.1, una compra de $1000 dará 100 puntos.</p>
+                                        </div>
+                                        
+                                        <div className="space-y-2 border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <Label className="text-xs font-bold text-orange-700 dark:text-orange-400 cursor-pointer" htmlFor="enable-redemption">
+                                                    Permitir Pago con Puntos
+                                                </Label>
+                                                <Switch
+                                                    id="enable-redemption"
+                                                    checked={config.enablePointsRedemption || false}
+                                                    onCheckedChange={(c) => setConfig({ ...config, enablePointsRedemption: c })}
+                                                />
+                                            </div>
+                                            {config.enablePointsRedemption && (
+                                                <div className="space-y-2 mt-2">
+                                                    <Label className="text-[10px] font-semibold text-muted-foreground">Valor en dinero por cada 1 Punto ({config.currencySymbol})</Label>
+                                                    <Input
+                                                        type="number"
+                                                        step="any"
+                                                        inputMode="decimal"
+                                                        value={config.moneyPerPoint || 0}
+                                                        onChange={(e) => setConfig({ ...config, moneyPerPoint: parseFloat(e.target.value) || 0 })}
+                                                    />
+                                                    <p className="text-[10px] text-muted-foreground">Ej: Si pones 1, entonces 100 puntos = $100 de descuento.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
                     {config.enabledPaymentMethods && (config.enabledPaymentMethods as string[]).includes("TRANSFER") && (
                         <BankAccountsManager config={config} setConfig={setConfig} />
                     )}

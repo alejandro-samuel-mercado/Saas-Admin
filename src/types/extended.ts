@@ -159,6 +159,7 @@ export interface StoreConfig {
       allowCustomDomain: boolean;
       allowInvoicing: boolean;
       allowPOS: boolean;
+      allowPointsSystem: boolean;
     };
   };
   rubro?: Rubro | null;

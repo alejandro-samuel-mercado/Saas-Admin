@@ -156,7 +156,8 @@ export default function ProductsPage() {
             Precio_Base: p.basePrice,
             Unidad_Medida: p.measurementUnit || "UNIDAD",
             Codigo_SKU: sku.code,
-            Precio_SKU: sku.price,
+            Precio_Venta: sku.price,
+            Precio_Base_Costo: sku.costPrice || 0,
             Stock_Inicial: sku.stock || 0,
             Codigo_Barras: sku.barcode || "-",
 

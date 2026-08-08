@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { formatCurrency } from "@/lib/utils"
-import { CategoriesAPI, ConfigAPI, CurrenciesAPI, ProductsAPI } from "@/services/api"
+import { CategoriesAPI, ConfigAPI, CurrenciesAPI, ProductsAPI, SuppliersAPI } from "@/services/api"
 import { useConfigStore, useRubro } from "@/store/config.store"
 import { Category, Condition, Currency, Product, SaleMode } from "@/types/schema"
 import { Plus, X, Upload } from "lucide-react"
@@ -48,6 +48,7 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
     })
     const [customUnits, setCustomUnits] = useState<string[]>([])
     const [categories, setCategories] = useState<Category[]>([])
+    const [suppliers, setSuppliers] = useState<any[]>([])
     const [activeTab, setActiveTab] = useState("general")
     const [currencies, setCurrencies] = useState<Currency[]>([])
     const [baseCurrency, setBaseCurrency] = useState('')
@@ -78,17 +79,17 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
         }
     }
 
-    const loadCategories = async () => {
-        try {
-            const cats = await CategoriesAPI.getAll()
-            setCategories(Array.isArray(cats) ? cats : [])
-        } catch (error) {
-        }
-    }
-
     useEffect(() => {
+        const loadInitialData = async () => {
+            try {
+                const cats = await CategoriesAPI.getAll()
+                setCategories(cats)
+                const supps = await SuppliersAPI.getAll()
+                setSuppliers(supps || [])
+            } catch (error) { }
+        }
+        loadInitialData()
         loadConfig()
-        loadCategories()
         loadCurrencies()
     }, [])
 
@@ -226,6 +227,25 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
                                                     </SelectItem>
                                                 ))}
                                                 {(!categories || categories.length === 0) && <SelectItem value="0" disabled>No hay categorías</SelectItem>}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="supplier" className="text-foreground">Proveedor (Opcional)</Label>
+                                        <Select
+                                            value={(formData as any).supplierId ? String((formData as any).supplierId) : undefined}
+                                            onValueChange={(v) => setFormData({ ...formData, supplierId: parseInt(v) } as any)}
+                                        >
+                                            <SelectTrigger className="bg-background border-input text-foreground">
+                                                <SelectValue placeholder="Asignar proveedor" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-popover border-border max-h-[300px] overflow-y-auto">
+                                                {suppliers.map((sup: any) => (
+                                                    <SelectItem key={sup.id} value={String(sup.id)}>
+                                                        {sup.tradeName}
+                                                    </SelectItem>
+                                                ))}
+                                                {(!suppliers || suppliers.length === 0) && <SelectItem value="0" disabled>No hay proveedores</SelectItem>}
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -670,9 +690,22 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
                                             />
                                             {(formData as any).costPrice && Number((formData as any).costPrice) > 0 && (
                                                 <p className="text-xs text-muted-foreground mt-1">
-                                                    Margen: {formData.basePrice && Number(formData.basePrice) > 0 ? (((Number(formData.basePrice) - Number((formData as any).costPrice)) / Number((formData as any).costPrice)) * 100).toFixed(1) + '%' : 'N/A'}
+                                                    Margen: {formData.basePrice && Number(formData.basePrice) > 0 && (formData as any).costPrice > 0 ? (((Number(formData.basePrice) - Number((formData as any).costPrice)) / Number((formData as any).costPrice)) * 100).toFixed(1) + '%' : 'N/A'}
                                                 </p>
                                             )}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-foreground">Código de Barras (Opcional)</Label>
+                                            <Input
+                                                type="text"
+                                                value={(formData as any).barcode || ''}
+                                                onChange={(e) => setFormData({ ...formData, barcode: e.target.value } as any)}
+                                                className="bg-background border-input text-foreground font-bold"
+                                                placeholder="Ej: 7791234567890"
+                                            />
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                Puedes usar tu lector de códigos para escanear directamente aquí.
+                                            </p>
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="text-foreground">Impuesto Específico (%) <span className="text-xs text-muted-foreground font-normal ml-1">(Opcional, anula el global)</span></Label>

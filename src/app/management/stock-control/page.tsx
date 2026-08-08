@@ -150,7 +150,9 @@ export default function StockControlPage() {
         Variante: item.variant || "Standard",
         Stock: item.stock,
         Stock_Minimo: item.minStock,
-        Precio: formatCurrency(item.price, storeConfig?.baseCurrency || "USD", storeConfig?.currencySymbol),
+        Precio_Venta: formatCurrency(item.price, storeConfig?.baseCurrency || "USD", storeConfig?.currencySymbol),
+        Precio_Base_Costo: (item as any).costPrice || 0,
+        Codigo_Barras: (item as any).barcode || "-",
         Estado:
           item.stock <= 0
             ? "AGOTADO"

@@ -12,8 +12,10 @@ import { cn, formatCurrency } from "@/lib/utils"
 import { purchaseService } from "@/services/purchase.service"
 import { supplierService } from "@/services/supplier.service"
 import { useBranchStore } from "@/store/branch.store"
+import { SkuAPI } from "@/services/api"
 import { Check, ChevronsUpDown, Loader2, Plus, Trash2 } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
+import { Switch } from "@/components/ui/switch"
 
 interface PurchaseFormProps {
     onSuccess?: () => void;
@@ -37,6 +39,19 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
     const [isSearchingSuppliers, setIsSearchingSuppliers] = useState(false)
     const [isPopoverOpen, setIsPopoverOpen] = useState(false)
     
+    // Additional Costs
+    const [shippingCost, setShippingCost] = useState(0)
+    const [additionalCost, setAdditionalCost] = useState(0)
+    const [invoiceCost, setInvoiceCost] = useState(0)
+    const [utilityPercentage, setUtilityPercentage] = useState(0)
+    
+    // Credit options
+    const [isCredit, setIsCredit] = useState(false)
+    const [installmentsCount, setInstallmentsCount] = useState(1)
+    const [installments, setInstallments] = useState<any[]>([])
+
+    const [allSkus, setAllSkus] = useState<any[]>([])
+    
     const [loading, setLoading] = useState(false)
 
     const searchSuppliers = useCallback(async (query: string) => {
@@ -53,6 +68,13 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
 
     useEffect(() => {
         searchSuppliers("")
+        const loadAllSkus = async () => {
+            try {
+                const data = await SkuAPI.getAll({ limit: 500, active: true })
+                setAllSkus(data.data || data || [])
+            } catch (error) {}
+        }
+        loadAllSkus()
     }, [searchSuppliers])
     
     useEffect(() => {
@@ -61,6 +83,21 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
         }, 500)
         return () => clearTimeout(timer)
     }, [supplierSearchQuery, searchSuppliers])
+
+    useEffect(() => {
+        if (installmentsCount > 0 && isCredit) {
+            const newInstallments = []
+            const amountPerInstallment = calculateTotal() / installmentsCount
+            for (let i = 0; i < installmentsCount; i++) {
+                const date = new Date()
+                date.setMonth(date.getMonth() + i + 1) // default 1 month apart
+                newInstallments.push({ amount: amountPerInstallment, dueDate: date.toISOString().split('T')[0] })
+            }
+            setInstallments(newInstallments)
+        } else {
+            setInstallments([])
+        }
+    }, [installmentsCount, isCredit, items, shippingCost, additionalCost])
     
     useEffect(() => {
         if (supplierId) {
@@ -97,6 +134,11 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
             const catalogItem = supplierSkus.find(s => s.skuId.toString() === value.toString())
             if (catalogItem) {
                 newItems[index].unitPrice = catalogItem.sku?.costPrice || catalogItem.basePurchasePrice || 0
+            } else {
+                const allSkuItem = allSkus.find(s => s.id.toString() === value.toString())
+                if (allSkuItem) {
+                    newItems[index].unitPrice = allSkuItem.costPrice || 0
+                }
             }
         }
         
@@ -104,11 +146,12 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
     }
 
     const calculateTotal = () => {
-        return items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
+        const itemsTotal = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
+        return itemsTotal + (Number(shippingCost) || 0) + (Number(additionalCost) || 0)
     }
 
     const isFormValid = () => {
-        if (!activeBranch || !supplierId || items.length === 0) return false;
+        if (!activeBranch || items.length === 0) return false;
         
         return items.every(item => 
             item.skuId && 
@@ -119,11 +162,11 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
 
     const handleSubmit = async () => {
         if (!activeBranch) {
-           toast({ title: "Selecciona una sucursal  primero", variant: "destructive" })
+           toast({ title: "Selecciona una sucursal primero", variant: "destructive" })
            return
         }
-        if (!supplierId || items.length === 0) {
-            toast({ title: "Completa los campos requeridos", variant: "destructive" })
+        if (items.length === 0) {
+            toast({ title: "Agrega al menos un item", variant: "destructive" })
             return
         }
 
@@ -131,8 +174,17 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
             setLoading(true)
             const formData = new FormData()
             formData.append('branchId', activeBranch.id.toString())
-            formData.append('supplierId', supplierId)
+            if (supplierId) {
+                formData.append('supplierId', supplierId)
+            }
             formData.append('notes', notes)
+            formData.append('shippingCost', String(shippingCost))
+            formData.append('additionalCost', String(additionalCost))
+            formData.append('invoiceCost', String(invoiceCost))
+            formData.append('utilityPercentage', String(utilityPercentage))
+            formData.append('isCredit', String(isCredit))
+            formData.append('installments', JSON.stringify(installments))
+            
             formData.append('items', JSON.stringify(items.map(i => ({
                 skuId: parseInt(i.skuId),
                 quantity: parseFloat(i.quantity),
@@ -247,14 +299,14 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
                 <div className="space-y-4">
                     <div className="flex justify-between items-center border-b border-border pb-2">
                         <h3 className="font-medium text-foreground">Items de la Orden</h3>
-                        <Button variant="outline" size="sm" onClick={addItem} disabled={!supplierId} className="hover:cursor-pointer">
+                        <Button variant="outline" size="sm" onClick={addItem} className="hover:cursor-pointer">
                             <Plus className="h-4 w-4 mr-2" /> Agregar Item
                         </Button>
                     </div>
                     
                     {items.length === 0 && (
                         <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg bg-muted/50">
-                            Selecciona un proveedor y agrega items
+                            Agrega items a la orden de compra
                         </div>
                     )}
                     
@@ -269,14 +321,15 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
                                     <SelectTrigger className="h-9 bg-background border-input">
                                         <SelectValue placeholder="Producto..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-popover border-border">
-                                        {(Array.isArray(supplierSkus) ? supplierSkus : []).map(s => {
-                                            const variantText = s.sku.variantOptions?.length > 0 
-                                                ? ` (${s.sku.variantOptions.map((v: any) => `${v.name}: ${v.value}`).join(', ')})`
+                                    <SelectContent className="bg-popover border-border max-h-[300px]">
+                                        {(supplierId ? supplierSkus.map(s => ({ ...s.sku, skuId: s.skuId })) : allSkus).map((sku: any) => {
+                                            const actualSkuId = sku.skuId || sku.id;
+                                            const variantText = sku.variantOptions?.length > 0 
+                                                ? ` (${sku.variantOptions.map((v: any) => `${v.name}: ${v.value}`).join(', ')})`
                                                 : '';
                                             return (
-                                                <SelectItem key={s.skuId} value={s.skuId.toString()}>
-                                                    {s.sku.code} - {s.sku.product.name}{variantText}
+                                                <SelectItem key={actualSkuId} value={actualSkuId.toString()}>
+                                                    {sku.code} - {sku.product?.name || sku.name}{variantText}
                                                 </SelectItem>
                                             );
                                         })}
@@ -313,9 +366,111 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
                     ))}
                     
                     {items.length > 0 && (
-                        <div className="flex justify-end pt-4 border-t border-border">
-                            <div className="text-right">
-                                <span className="text-muted-foreground text-sm">Total Estimado:</span>
+                        <div className="flex flex-col pt-4 border-t border-border gap-6">
+                            
+                            {/* Extra Costs Section */}
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-muted/30 p-4 rounded-lg border border-border">
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">Costo de Envío</Label>
+                                    <SafeNumericInput 
+                                        className="h-9 bg-background border-input"
+                                        value={shippingCost} 
+                                        onChange={val => setShippingCost(Number(val))} 
+                                        onStringChange={val => setShippingCost(Number(val))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">Costos Adicionales</Label>
+                                    <SafeNumericInput 
+                                        className="h-9 bg-background border-input"
+                                        value={additionalCost} 
+                                        onChange={val => setAdditionalCost(Number(val))} 
+                                        onStringChange={val => setAdditionalCost(Number(val))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">Impuestos</Label>
+                                    <SafeNumericInput 
+                                        className="h-9 bg-background border-input"
+                                        value={invoiceCost} 
+                                        onChange={val => setInvoiceCost(Number(val))} 
+                                        onStringChange={val => setInvoiceCost(Number(val))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground font-semibold">Utilidad Global (%)</Label>
+                                    <SafeNumericInput 
+                                        className="h-9 bg-background border-input font-bold"
+                                        value={utilityPercentage} 
+                                        onChange={val => setUtilityPercentage(Number(val))} 
+                                        onStringChange={val => setUtilityPercentage(Number(val))}
+                                    />
+                                    <p className="text-[10px] text-muted-foreground leading-tight">Opcional. Actualizará los precios de venta de estos items automáticamente al confirmar.</p>
+                                </div>
+                            </div>
+
+                            {/* Credit Section */}
+                            <div className="space-y-4 bg-muted/30 p-4 rounded-lg border border-border">
+                                <div className="flex items-center gap-4">
+                                    <Label className="text-foreground font-medium">¿Compra a Crédito?</Label>
+                                    <Switch checked={isCredit} onCheckedChange={setIsCredit} />
+                                </div>
+                                
+                                {isCredit && (
+                                    <div className="space-y-4 pt-2">
+                                        <div className="space-y-2 max-w-[200px]">
+                                            <Label className="text-xs text-muted-foreground">Cantidad de Cuotas (Meses)</Label>
+                                            <SafeNumericInput 
+                                                className="h-9 bg-background border-input"
+                                                value={installmentsCount} 
+                                                onChange={val => setInstallmentsCount(Number(val))} 
+                                                onStringChange={val => setInstallmentsCount(Number(val))}
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            {installments.map((inst, idx) => (
+                                                <div key={idx} className="space-y-2 p-3 bg-background border rounded-md">
+                                                    <Label className="text-xs font-semibold">Cuota {idx + 1}</Label>
+                                                    <div>
+                                                        <Label className="text-[10px] text-muted-foreground">Fecha de Pago</Label>
+                                                        <Input 
+                                                            type="date"
+                                                            value={inst.dueDate}
+                                                            onChange={e => {
+                                                                const newInst = [...installments];
+                                                                newInst[idx].dueDate = e.target.value;
+                                                                setInstallments(newInst);
+                                                            }}
+                                                            className="h-8 text-xs"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[10px] text-muted-foreground">Monto</Label>
+                                                        <SafeNumericInput 
+                                                            className="h-8 text-xs"
+                                                            value={inst.amount}
+                                                            onChange={val => {
+                                                                const newInst = [...installments];
+                                                                newInst[idx].amount = Number(val);
+                                                                setInstallments(newInst);
+                                                            }}
+                                                            onStringChange={val => {
+                                                                const newInst = [...installments];
+                                                                newInst[idx].amount = Number(val);
+                                                                setInstallments(newInst);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="text-right border-t border-border pt-4">
+                                <span className="text-muted-foreground text-sm">Total Estimado (Inc. Costos Extra):</span>
                                 <div className="text-2xl font-bold text-foreground">{formatCurrency(calculateTotal())}</div>
                             </div>
                         </div>

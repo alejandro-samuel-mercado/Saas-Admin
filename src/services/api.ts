@@ -440,6 +440,10 @@ export const UploadAPI = {
 }
 
 export const SkuAPI = {
+    getAll: async (params?: any) => {
+        const { data } = await api.get('/skus', { params })
+        return data.data
+    },
     create: async (data: any) => {
         const { data: res } = await api.post('/skus', data)
         return res.data
@@ -533,6 +537,13 @@ export const PurchasesAPI = {
     cancel: async (id: number) => {
         const { data } = await api.post(`/purchases/${id}/cancel`)
         return data
+    }
+}
+
+export const SuppliersAPI = {
+    getAll: async (params?: any) => {
+        const { data } = await api.get('/suppliers', { params })
+        return data.data
     }
 }
 
