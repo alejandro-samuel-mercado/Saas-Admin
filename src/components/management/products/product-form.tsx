@@ -240,7 +240,7 @@ export function ProductForm({ open, onOpenChange, product, onSave }: ProductForm
                                                 <SelectValue placeholder="Asignar proveedor" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-popover border-border max-h-[300px] overflow-y-auto">
-                                                {suppliers.map((sup: any) => (
+                                                {(Array.isArray(suppliers) ? suppliers : []).map((sup: any) => (
                                                     <SelectItem key={sup.id} value={String(sup.id)}>
                                                         {sup.tradeName}
                                                     </SelectItem>
