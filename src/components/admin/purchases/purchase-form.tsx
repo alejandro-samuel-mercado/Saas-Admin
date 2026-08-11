@@ -46,6 +46,8 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
     const [utilityPercentage, setUtilityPercentage] = useState(0)
     
     // Credit options
+    const [isDirectPurchase, setIsDirectPurchase] = useState(false)
+    const [paymentMethod, setPaymentMethod] = useState("CASH")
     const [isCredit, setIsCredit] = useState(false)
     const [installmentsCount, setInstallmentsCount] = useState(1)
     const [installments, setInstallments] = useState<any[]>([])
@@ -151,7 +153,7 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
     }
 
     const isFormValid = () => {
-        if (!activeBranch || items.length === 0) return false;
+        if (!activeBranch || items.length === 0 || !supplierId) return false;
         
         return items.every(item => 
             item.skuId && 
@@ -182,7 +184,11 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
             formData.append('additionalCost', String(additionalCost))
             formData.append('invoiceCost', String(invoiceCost))
             formData.append('utilityPercentage', String(utilityPercentage))
+            formData.append('isDirectPurchase', String(isDirectPurchase))
             formData.append('isCredit', String(isCredit))
+            if (isDirectPurchase && !isCredit) {
+                formData.append('paymentMethod', paymentMethod)
+            }
             formData.append('installments', JSON.stringify(installments))
             
             formData.append('items', JSON.stringify(items.map(i => ({
@@ -322,7 +328,7 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
                                         <SelectValue placeholder="Producto..." />
                                     </SelectTrigger>
                                     <SelectContent className="bg-popover border-border max-h-[300px]">
-                                        {(supplierId ? supplierSkus.map(s => ({ ...s.sku, skuId: s.skuId })) : allSkus).map((sku: any) => {
+                                        {allSkus.map((sku: any) => {
                                             const actualSkuId = sku.skuId || sku.id;
                                             const variantText = sku.variantOptions?.length > 0 
                                                 ? ` (${sku.variantOptions.map((v: any) => `${v.name}: ${v.value}`).join(', ')})`
@@ -409,12 +415,36 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
                                 </div>
                             </div>
 
-                            {/* Credit Section */}
+                            {/* Purchase Type and Credit Section */}
                             <div className="space-y-4 bg-muted/30 p-4 rounded-lg border border-border">
                                 <div className="flex items-center gap-4">
+                                    <Label className="text-foreground font-medium">¿Compra Directa?</Label>
+                                    <Switch checked={isDirectPurchase} onCheckedChange={setIsDirectPurchase} />
+                                    <p className="text-xs text-muted-foreground ml-2">Ingresa directamente al stock sin quedar en borrador.</p>
+                                </div>
+                                
+                                <div className="flex items-center gap-4 pt-2 border-t border-border/50">
                                     <Label className="text-foreground font-medium">¿Compra a Crédito?</Label>
                                     <Switch checked={isCredit} onCheckedChange={setIsCredit} />
                                 </div>
+
+                                {isDirectPurchase && !isCredit && (
+                                    <div className="space-y-2 pt-2 max-w-[250px]">
+                                        <Label className="text-xs text-muted-foreground font-bold">Método de Pago</Label>
+                                        <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                                            <SelectTrigger className="h-9 bg-background border-input">
+                                                <SelectValue placeholder="Método..." />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-popover border-border">
+                                                <SelectItem value="CASH">Efectivo</SelectItem>
+                                                <SelectItem value="TRANSFER">Transferencia</SelectItem>
+                                                <SelectItem value="MERCADO_PAGO">Mercado Pago</SelectItem>
+                                                <SelectItem value="CHECK">Cheque</SelectItem>
+                                                <SelectItem value="OTHER">Otro</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
                                 
                                 {isCredit && (
                                     <div className="space-y-4 pt-2">
@@ -480,7 +510,7 @@ export function PurchaseForm({ onSuccess, onCancel }: PurchaseFormProps) {
                  <div className="flex justify-end gap-3 pt-6">
                     <Button variant="ghost" onClick={() => onCancel && onCancel()}>Cancelar</Button>
                     <Button onClick={handleSubmit} disabled={loading || !isFormValid()} className="shadow-sm hover:cursor-pointer">
-                        {loading ? "Creando..." : "Generar Orden de Compra"}
+                        {loading ? "Procesando..." : (isDirectPurchase ? "Registrar Compra" : "Generar Orden")}
                     </Button>
                 </div>
             </div>
